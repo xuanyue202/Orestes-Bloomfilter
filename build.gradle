@@ -13,7 +13,7 @@ repositories {
 dependencies {
     compile(
             'com.google.code.gson:gson:2.5',
-            'redis.clients:jedis:2.9.0',
+           'redis.clients:jedis:2.9.0',
             //'org.apache.commons:commons-pool2:2.2',
             'org.slf4j:slf4j-api:1.7.12'
     )
@@ -145,6 +145,12 @@ uploadArchives {
                        name 'MIT'
                        url 'https://raw.github.com/xuanyue202/Orestes-Bloomfilter/master/LICENSE'
                        distribution 'repo'
+                   }
+               }
+ 	       developers {
+                   developer {
+                       id 'Baqend'
+                       name 'Baqend'
                    }
                }
            }
