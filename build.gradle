@@ -129,7 +129,7 @@ uploadArchives {
             }
 
             pom.project {
-               name 'orestes-bloomfilter'
+               name 'bloom-filter'
                packaging 'jar'
                description 'Library of different Bloom filters in Java with optional Redis-backing, counting and many hashing options.'
                url 'https://github.com/xuanyue202/Orestes-Bloomfilter'
