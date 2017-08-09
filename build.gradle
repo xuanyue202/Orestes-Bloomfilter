@@ -2,6 +2,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 
 apply plugin: 'java'
+apply plugin: 'signing'
 apply plugin: 'maven'
 //apply plugin: 'java-library-distribution'
 
@@ -29,26 +30,13 @@ group = "com.github.xuanyue202"
 //distTar.compression "GZIP"
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.3'
+    gradleVersion = '4.0'
 }
 
-task javadocJar(type: Jar) {
-    classifier = 'javadoc'
-    from javadoc
-}
-
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
 
 test {
     dependsOn 'startRedis'
     finalizedBy 'stopRedis'
-}
-
-artifacts {
-    archives javadocJar, sourcesJar
 }
 
 
@@ -111,3 +99,55 @@ def sh(command, workingDir = buildDir, returnOutput = false) {
         return process.text
 }
 
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    from project.tasks.javadoc.destinationDir
+    classifier = 'javadoc'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives jar
+    archives javadocJar
+    archives sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+              authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            pom.project {
+               name 'orestes-bloomfilter'
+               packaging 'jar'
+               description 'Library of different Bloom filters in Java with optional Redis-backing, counting and many hashing options.'
+               url 'https://github.com/xuanyue202/Orestes-Bloomfilter'
+
+               scm {
+                   url 'scm:git@github.com:xuanyue202/Orestes-Bloomfilter.git'
+                   connection 'scm:git@github.com:xuanyue202/Orestes-Bloomfilter.git'
+                   developerConnection 'scm:git@github.com:xuanyue202/Orestes-Bloomfilter.git'
+               }
+
+               licenses {
+                   license {
+                       name 'MIT'
+                       url 'https://raw.github.com/xuanyue202/Orestes-Bloomfilter/master/LICENSE'
+                       distribution 'repo'
+                   }
+               }
+           }
+        }
+    }
+}
